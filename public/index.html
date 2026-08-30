@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notify · Control plane</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Outfit:wght@400;500;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 8.5 12 4l7 4.5v7L12 20l-7-4.5v-7Z" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 12v8M5 8.5 12 12l7-3.5" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Notify</h1>
+          <p>Distributed delivery</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="active" data-view="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-5H4v5Z"/></svg>
+          Overview
+        </button>
+        <button data-view="compose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12h14"/></svg>
+          Compose
+        </button>
+        <button data-view="inbox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+          Inbox
+        </button>
+        <button data-view="activity">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 16V9m5 7V5m5 11v-6"/></svg>
+          Activity
+        </button>
+        <button data-view="failed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5M12 16h.01"/></svg>
+          Failed jobs
+        </button>
+        <button data-view="users">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M4 19c.6-3 2.6-5 5-5s4.4 2 5 5"/><circle cx="17" cy="9" r="2"/><path d="M16 19c.3-2 1.6-3.4 3.2-4"/></svg>
+          Users
+        </button>
+        <button data-view="templates">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4h10v16H7z"/><path d="M10 8h4M10 12h4M10 16h2"/></svg>
+          Templates
+        </button>
+      </nav>
+      <div class="health">
+        <div class="row"><span>API</span><span id="api-status" class="pill idle">checking</span></div>
+        <div class="row"><span>Mongo</span><span id="mongo-status">—</span></div>
+        <div class="row"><span>Redis</span><span id="redis-status">—</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="eyebrow">Operations</p>
+          <h2 id="title">Delivery overview</h2>
+          <p id="subtitle">Queue depth, channel health, and the latest delivery attempts.</p>
+        </div>
+        <div class="live"><span class="dot"></span><span id="stamp">connecting…</span></div>
+      </header>
+
+      <section id="view-overview">
+        <div class="kpis" id="kpis"></div>
+        <div class="grid-2">
+          <article class="card">
+            <div class="section-title"><h3>Channel throughput</h3></div>
+            <div id="channels"></div>
+          </article>
+          <article class="card">
+            <div class="section-title"><h3>Queue depth</h3></div>
+            <table id="queues"></table>
+          </article>
+        </div>
+        <article class="card" style="margin-top: 14px;">
+          <div class="section-title"><h3>Recent deliveries</h3></div>
+          <table id="overview-logs"></table>
+        </article>
+      </section>
+
+      <section id="view-compose" class="hidden">
+        <article class="card">
+          <form class="form" id="compose-form">
+            <div class="fields">
+              <label>Recipient
+                <select id="compose-user" required></select>
+              </label>
+              <label>Template
+                <select id="compose-template">
+                  <option value="">Custom message</option>
+                </select>
+              </label>
+              <label>Priority
+                <select id="compose-priority">
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                  <option value="low">Low</option>
+                </select>
+              </label>
+              <label>Schedule
+                <input id="compose-schedule" type="datetime-local" />
+              </label>
+            </div>
+            <label>Channels
+              <div class="channels" id="compose-channels"></div>
+            </label>
+            <div class="fields" id="compose-custom">
+              <label>Title <input id="compose-title" placeholder="Account update" /></label>
+              <label>Body <input id="compose-body" placeholder="Your settings were saved." /></label>
+            </div>
+            <div class="fields hidden" id="compose-data"></div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button type="submit" class="btn" id="send-btn">Send notification</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section id="view-inbox" class="hidden">
+        <div class="section-title">
+          <label style="min-width: 280px;">Inbox for
+            <select id="inbox-user"></select>
+          </label>
+          <span id="unread" class="pill idle">0 unread</span>
+        </div>
+        <div class="user-grid" id="inbox"></div>
+      </section>
+
+      <section id="view-activity" class="hidden">
+        <article class="card">
+          <table id="activity"></table>
+        </article>
+      </section>
+
+      <section id="view-failed" class="hidden">
+        <article class="card">
+          <table id="failed"></table>
+        </article>
+      </section>
+
+      <section id="view-users" class="hidden">
+        <div class="user-grid" id="users"></div>
+      </section>
+
+      <section id="view-templates" class="hidden">
+        <div class="template-grid" id="templates"></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

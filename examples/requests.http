@@ -1,0 +1,47 @@
+### Health
+GET http://localhost:3000/health
+
+### List users
+GET http://localhost:3000/api/users
+
+### Send welcome (replace USER_ID)
+POST http://localhost:3000/api/notifications
+Content-Type: application/json
+
+{
+  "userId": "USER_ID",
+  "templateSlug": "welcome",
+  "channels": ["email", "push", "sms", "inapp"],
+  "priority": "high",
+  "idempotencyKey": "welcome-demo-1"
+}
+
+### Password reset
+POST http://localhost:3000/api/notifications
+Content-Type: application/json
+
+{
+  "userId": "USER_ID",
+  "templateSlug": "password-reset",
+  "data": { "code": "482911", "minutes": 15 }
+}
+
+### Scheduled shipment alert
+POST http://localhost:3000/api/notifications
+Content-Type: application/json
+
+{
+  "userId": "USER_ID",
+  "templateSlug": "order-shipped",
+  "scheduledAt": "2026-08-30T20:00:00.000Z",
+  "data": { "orderId": "A-100", "carrier": "DHL", "tracking": "1Z999" }
+}
+
+### Inbox
+GET http://localhost:3000/api/inbox/USER_ID
+
+### Metrics
+GET http://localhost:3000/api/admin/metrics
+
+### Failed jobs
+GET http://localhost:3000/api/admin/failed-jobs
