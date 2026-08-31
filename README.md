@@ -13,7 +13,7 @@ Providers are simulated by default. You can run the whole system on a laptop wit
 | Control plane | [http://localhost:3000](http://localhost:3000) |
 | Stack | Node.js · Express · MongoDB · Redis · BullMQ |
 | License | MIT |
-
+THIS PROJECT IS IN DEV MODE!
 ---
 
 ## Contents
